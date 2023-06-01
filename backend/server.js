@@ -1,5 +1,6 @@
 const express=require('express');
 const mongoose=require('mongoose');
+const cors=require('cors')
 //appConfigs
 const app=express();
 const port= process.env.PORT||8000;
@@ -7,6 +8,7 @@ const port= process.env.PORT||8000;
 
 //Middlewares
 app.use(express.json());
+app.use(cors());
 
 
 //dbConfig

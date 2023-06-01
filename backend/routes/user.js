@@ -15,14 +15,16 @@ router.post('/create', [
     body('password').isLength({ min: 3 }),
 ], async (req, res) => {
     //check if user already exists
-    let findUser = await user.findOne({ email: req.body.email });
+    let findUser = await User.findOne({ email: req.body.email });
     if (findUser) {
-        return res.status(400).send("User Already Exists");
+        success=false
+        return res.status(400).json({success:success,message:"User Already Exists"});
     }
     //valid details error handling
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send(errors);
+        success=false;
+        res.status(400).json({success,errors});
     }
     else {
         //password encryption
@@ -41,7 +43,8 @@ router.post('/create', [
             }
         }
         const authToken=jwt.sign(data,secret);
-        res.json({authToken});
+        success=true;
+        res.json({success:success,message:authToken});
     }
 })
 
@@ -53,13 +56,15 @@ router.post('/login', [
     //valid details error handling
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send(errors);
+        success=false
+        res.status(400).json({success:success,error:errors});
     }
     else {
         //check if user already exists
         let findUser = await User.findOne({ email: req.body.email });
         if (!findUser) {
-            return res.status(400).send("User Does Not Exist");
+            success=false;
+            return res.status(400).json({success:success,message:"User Does Not Exists"});
         }
         //Password Comparison
         const passCompare = bycrypt.compareSync(req.body.password, findUser.password);
@@ -71,10 +76,12 @@ router.post('/login', [
                 }
             }
             const authToken=jwt.sign(data,secret);
-            res.json({authToken});
+            success=true;
+            res.json({success:success,authToken:authToken});
         }
         else {
-            res.status(400).send("User Not Found")
+            success=false
+            res.status(400).json({success:success,message:"User Not Found"})
         }
     }
 })

@@ -2,3 +2,9 @@
   margin: 0;
   padding: 0;
 }
+.point{
+  cursor: pointer;
+}
+body{
+  background-color: #232020;
+}
